@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.agent.AgentMapper">
+    <sql id="common_field">
+        id, linkman_name, linkman_phone, linkman_email, min_payment_amount, min_recharge_number, business_license_path,
+        company_name, company_short_name, business_license_address, business_license_number, legal_person,
+        business_license_expire_start_time, business_license_expire_end_time, agent_level, real_level, price,
+        warnings_number, register_gift, state, remark, version, create_time, update_time, real_price, real_min_payment_amount,
+        real_min_recharge_number, real_warnings_number, authentication_limit_level, mobile_cube_path,international_mobile_cube_path
+    </sql>
+
+    <!--代理商-查找（通过id）-->
+    <select id="findById" resultType="com.zhongzhi.data.entity.agent.Agent">
+        select
+            <include refid="common_field"/>
+        from agent
+        where id=#{id}
+    </select>
+
+    <select id="getAgentById" resultType="com.zhongzhi.data.vo.AgentQueryVo">
+        select
+            <include refid="common_field"/>
+        from agent
+        where id=#{id}
+    </select>
+</mapper>

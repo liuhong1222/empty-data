@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.international.InternationalCvsFilePathMapper">
+
+    <insert id="saveOne" parameterType="com.zhongzhi.data.entity.international.InternationalCvsFilePath">
+        insert into international_cvs_file_path(id, customer_id, create_date, international_id, active_file_path, active_file_size,
+                                                active_number, no_register_file_path, no_register_file_size, no_register_number, 
+                                                unknown_number,unknown_file_path,unknown_file_size,
+                                                zip_name, zip_path, zip_size, total_number, create_time,deleted,update_time)
+        values
+            (#{id},#{customerId},#{createDate},#{internationalId},#{activeFilePath},#{activeFileSize},#{activeNumber},#{noRegisterFilePath},
+             #{noRegisterFileSize},#{noRegisterNumber},#{unknownNumber},#{unknownFilePath},#{unknownFileSize},#{zipName},#{zipPath},#{zipSize},#{totalNumber},now(),0,now())
+    </insert>
+
+    <select id="findOne" resultType="com.zhongzhi.data.entity.international.InternationalCvsFilePath">
+        select id, customer_id, create_date, international_id, active_file_path, active_file_size,
+               active_number, no_register_file_path, no_register_file_size, no_register_number, 
+               unknown_number,unknown_file_path,unknown_file_size,
+               zip_name, zip_path, zip_size, total_number, create_time,deleted,update_time
+        from international_cvs_file_path
+        where customer_id = #{customerId} and international_id = #{internationalId}
+        limit 0,1
+    </select>
+
+    <!--删除-->
+    <update id="delete">
+        update international_cvs_file_path
+        set deleted = 1,update_time = now()
+        where id=#{id}
+    </update>
+    
+    <select id="pageList" resultType="com.zhongzhi.data.vo.InternationalCheckQueryVo" parameterType="com.zhongzhi.data.param.InternationalCheckQueryParam">
+    	SELECT id,customer_id,active_number,no_register_number,unknown_number,total_number,deleted,
+	     	   create_time,update_time,active_file_path,no_register_file_path,unknown_file_path,zip_name,zip_path,zip_size
+		from international_cvs_file_path 
+		where customer_id = #{customerId} and deleted = 0
+		<if test="createTimeFrom != null">
+			and create_date >= #{createTimeFrom}
+		</if>
+		<if test="createTimeEnd != null">
+			 <![CDATA[ and create_date <= #{createTimeEnd} ]]>
+		</if>
+		order by id desc
+    </select>
+    
+    <select id="findLastOne" resultType="com.zhongzhi.data.vo.InternationalCheckQueryVo">
+    	SELECT id,customer_id,active_number,no_register_number,unknown_number,total_number,deleted,
+	     	   create_time,update_time,active_file_path,no_register_file_path,unknown_file_path,zip_name,zip_path,zip_size
+		from international_cvs_file_path 
+		where customer_id = #{customerId} and deleted = 0
+		order by id desc 
+		limit 0,1
+    </select>
+    
+	<select id="statisticList" resultType="com.zhongzhi.data.entity.international.InternationalCheckStatistics">
+		select sum(active_number)                     		active_number,
+			   sum(no_register_number)                   	no_register_number,
+			   sum(unknown_number)                   	unknown_number,
+			   sum(total_number)                    totalNumber,
+			   create_date `day`
+		from international_cvs_file_path
+		where deleted = 0
+			and customer_id = #{customerId}
+			and create_date >= #{fromTime}
+			<![CDATA[ and create_date <  #{endTime} ]]>
+		group by create_date
+		order by create_date
+	</select>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.ApiSettingsMapper">
+
+    <!--对外api接口-新增-->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into api_settings
+            (customer_id, app_id, app_key, remark, state, version, create_time, update_time)
+        values
+            (#{customerId}, #{appId}, #{appKey}, #{remark}, #{state}, #{version}, now(), now())
+    </insert>
+
+    <!--对外api接口-查找（通过条件）-->
+    <select id="findByCondition" resultType="com.zhongzhi.data.entity.ApiSettings">
+        select customer_id, app_id, app_key, remark, state, version, create_time, update_time
+        from api_settings
+        <where>
+            <if test="customerId!=null">
+                and customer_id=#{customerId}
+            </if>
+            <if test="appId!=null">
+                and app_id=#{appId}
+            </if>
+            <if test="appKey!=null">
+                and app_key=#{appKey}
+            </if>
+            <if test="state!=null">
+                and state=#{state}
+            </if>
+            <if test="version!=null">
+                and version=#{version}
+            </if>
+        </where>
+    </select>
+
+    <select id="findOne" resultType="com.zhongzhi.data.entity.ApiSettings">
+   		select customer_id customerId,app_id appId,app_key appKey,remark,state,
+   			   version,create_time createTime,update_time updateTime
+   		from api_settings
+   		where customer_id = #{customerId}
+   		limit 0,1
+   	</select>
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.ProductGroupMapper">
+
+    <!--产品线管理分页列表-->
+    <select id="listByCondition" resultType="com.zhongzhi.data.entity.ProductGroup">
+        select id, agent_id, agent_name, `name`, icon, sort, state, apply_state, remark,
+               version, create_time, update_time
+        from product_group
+        <where>
+            <if test="agentId!=null">
+                and agent_id=#{agentId}
+            </if>
+            <if test="applyState!=null">
+                and apply_state=#{applyState}
+            </if>
+            <if test="state!=null">
+                and state=#{state}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.customer.CustomerRefundMapper">
+
+    <!--统计客户退款信息-->
+    <select id="countRefundInfo" resultType="com.zhongzhi.data.entity.customer.CustomerRefundTotalInfo">
+        select customer_id, sum(refund_number) refundNumberTotal, sum(convert(refund_amount, decimal(10,2)))
+        refundTotalPay
+        from customer_refund
+        where customer_id in
+        <foreach collection="customerIds" open="(" item="customerId" separator="," close=")">
+            #{customerId}
+        </foreach>
+        and category = #{category}
+        group by customer_id
+    </select>
+
+    <!--统计代理商下所有客户退款条数-->
+    <select id="countCustomerRefundInfoByAgentIds" resultType="com.zhongzhi.data.vo.customer.CustomerRefundQueryVo">
+        select sum(refund_number) refundNumber, agent_id, sum(convert(refund_amount, decimal(10,2))) refundAmount
+        from customer_refund
+        where agent_id in
+        <foreach collection="agentIds" open="(" item="agentId" separator="," close=")">
+            #{agentId}
+        </foreach>
+        and category = #{category}
+        group by agent_id
+    </select>
+
+</mapper>

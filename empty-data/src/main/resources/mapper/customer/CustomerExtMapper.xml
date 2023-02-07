@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.customer.CustomerExtMapper">
+
+    <!--客户认证信息-查找（通过客户id）-->
+    <select id="findByCustomerId" resultType="com.zhongzhi.data.entity.customer.CustomerExt">
+        select id, customer_id, id_card_front_path, id_card_back_path, id_card_name, id_card_number, id_card_address, id_card_expire_start_time,
+               id_card_expire_end_time, email, business_license_path, company_name, company_address, business_license_number, legal_person,
+               business_license_expire_start_time, business_license_expire_end_time, business_scope, remark, version, create_time, update_time
+        from customer_ext
+        where customer_id=#{id};
+    </select>
+
+    <!--客户认证信息-新增-->
+    <insert id="save">
+        insert into customer_ext
+            (id, customer_id, id_card_front_path, id_card_back_path, id_card_name, id_card_number, id_card_address, id_card_expire_start_time,
+            id_card_expire_end_time, email, business_license_path, company_name, company_address, business_license_number, legal_person,
+            business_license_expire_start_time, business_license_expire_end_time, business_scope, remark, version, create_time, update_time)
+        values
+            (#{id}, #{customerId}, #{idCardFrontPath}, #{idCardBackPath}, #{idCardName}, #{idCardNumber}, #{idCardAddress}, #{idCardExpireStartTime},
+             #{idCardExpireEndTime}, #{email}, #{businessLicensePath}, #{companyName}, #{companyAddress}, #{businessLicenseNumber}, #{legalPerson},
+             #{businessLicenseExpireStartTime}, #{businessLicenseExpireEndTime}, #{businessScope}, #{remark}, #{version}, now(), now())
+    </insert>
+
+    <!--客户认证信息-计数（通过社会信用代码）-->
+    <select id="countByBusinessLicenseNumber" resultType="java.lang.Integer">
+        select count(1)
+        from customer_ext
+        where business_license_number=#{socialCreditCode};
+    </select>
+
+    <!--客户认证信息-修改-->
+    <update id="update">
+        update customer_ext
+        <set>
+            <if test="idCardFrontPath!=null">
+                id_card_front_path=#{idCardFrontPath},
+            </if>
+            <if test="idCardBackPath!=null">
+                id_card_back_path=#{idCardBackPath},
+            </if>
+            <if test="idCardName!=null">
+                id_card_name=#{idCardName},
+            </if>
+            <if test="idCardNumber!=null">
+                id_card_number=#{idCardNumber},
+            </if>
+            <if test="idCardAddress!=null">
+                id_card_address=#{idCardAddress},
+            </if>
+            <if test="idCardExpireStartTime!=null">
+                id_card_expire_start_time=#{idCardExpireStartTime},
+            </if>
+            <if test="idCardExpireEndTime!=null">
+                id_card_expire_end_time=#{idCardExpireEndTime},
+            </if>
+            <if test="email!=null">
+                email=#{email},
+            </if>
+            <if test="businessLicensePath!=null">
+                business_license_path=#{businessLicensePath},
+            </if>
+            <if test="companyName!=null">
+                company_name=#{companyName},
+            </if>
+            <if test="companyAddress!=null">
+                company_address=#{companyAddress},
+            </if>
+            <if test="businessLicenseNumber!=null">
+                business_license_number=#{businessLicenseNumber},
+            </if>
+            <if test="legalPerson!=null">
+                legal_person=#{legalPerson},
+            </if>
+            <if test="businessLicenseExpireStartTime!=null">
+                business_license_expire_start_time=#{businessLicenseExpireStartTime},
+            </if>
+            <if test="businessLicenseExpireEndTime!=null">
+                business_license_expire_end_time=#{businessLicenseExpireEndTime},
+            </if>
+            <if test="businessScope!=null">
+                business_scope=#{businessScope},
+            </if>
+            <if test="remark!=null">
+                remark=#{remark},
+            </if>
+            <if test="version!=null">
+                version=#{version},
+            </if>
+            update_time=now()
+        </set>
+        where id=#{id};
+    </update>
+</mapper>

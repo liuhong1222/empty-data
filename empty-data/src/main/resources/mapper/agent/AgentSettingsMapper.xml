@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.agent.AgentSettingsMapper">
+    <sql id="common_fields">
+        id, agent_id, agent_name, agent_logo, agent_icon, deputy_signature, company_chop, sms_signature, `domain`, browser_right_display, hotline,
+        qq, business_code, wechat_qrcode, domain_copyright, domain_company_address, domain_contact_way, telecom_certification, icp, public_security_filing,
+        alipay_appid, alipay_gateway, alipay_notify, alipay_public_key, application_private_key, contact_company_name, contact_company_address, contact_company_account,
+        contact_company_bank, contact_postcode, contact_phone, wechat_gateway, wechatpay_notify, wechat_appid, wechat_mchid, wechat_key, wechat_appsecret, remark, `state`,
+        version, create_time, update_time, site_name, seo_keywords, seo_description, la51_src, baidu_src, agreement, baiduocpc_token, kefu_nickname, maintainer_phone,
+        maintainer_qq, maintainer_nickname, maintainer_wechat_qrcode, payee_public, pay_bank_public, pay_account_public, payee_private, pay_bank_private,
+        pay_account_private, payee_wechat, pay_qrcode_wechat, pay_account_wechat, payee_alipay, pay_qrcode_alipay, pay_account_alipay, official_web, api_domain, online_bl_url
+    </sql>
+
+    <!--代理商设置-查找（通过域名）-->
+    <select id="findByDomainAudited" resultType="com.zhongzhi.data.entity.agent.AgentSettings">
+        select
+            <include refid="common_fields"/>
+        from agent_settings
+        where `domain` = #{domain} and state=9
+    </select>
+
+    <!--代理商设置-查找（通过代理商id和状态）-->
+    <select id="findByAgentIdAudited" resultType="com.zhongzhi.data.entity.agent.AgentSettings">
+        select
+            <include refid="common_fields"/>
+        from agent_settings
+        where agent_id = #{agentId} and state=9
+    </select>
+
+    <!--代理商设置-查找（通过代理商id）-->
+    <select id="findByAgentId" resultType="com.zhongzhi.data.entity.agent.AgentSettings">
+        select
+            <include refid="common_fields"/>
+        from agent_settings
+        where agent_id = #{agentId}
+    </select>
+
+    <!--代理商设置-通过官网类型查询代理商域名-->
+    <select id="findAgentDomainByOfficialWeb" resultType="java.lang.String">
+        select a.domain
+        from agent_settings a
+        inner join customer c on a.agent_id = c.agent_id
+        where a.official_web=#{officialWeb} and c.phone=#{phone}
+        order by a.create_time
+        limit 1
+    </select>
+
+</mapper>

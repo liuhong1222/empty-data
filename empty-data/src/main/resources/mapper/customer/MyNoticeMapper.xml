@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.MyNoticeMapper">
+
+    <!--我的消息-列表-->
+    <select id="getMyNoticePageList" resultType="com.zhongzhi.data.entity.MyNotice">
+        select
+            id, customer_id, title, content, notice_type, have_read, create_time, update_time
+        from my_notice
+        <where>
+            <if test="param != null">
+                <if test="param.customerId != null">
+                    and customer_id = #{param.customerId}
+                </if>
+                <if test="param.read != null">
+                    and have_read = #{param.read}
+                </if>
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <!--我的消息-详情-->
+    <select id="getMyNoticeById" resultType="com.zhongzhi.data.entity.MyNotice">
+        select
+            id, customer_id, title, content, notice_type, have_read, create_time, update_time
+        from my_notice
+        where id = #{id}
+    </select>
+
+    <!--我的消息-删除-->
+    <delete id="delete">
+        delete from my_notice
+        where id=#{id};
+    </delete>
+
+    <!--我的消息-设为已读-->
+    <update id="update">
+        update my_notice
+        <set>
+            <if test="haveRead!=null">
+                have_read=#{haveRead},
+            </if>
+            update_time=now()
+        </set>
+        where id=#{id}
+    </update>
+
+
+</mapper>

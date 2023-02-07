@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.NewsMapper">
+
+    <!--新闻-列表（通过代理商id和审核状态）-->
+    <select id="listByAgentIdAudited" resultType="com.zhongzhi.data.entity.News">
+        select n.id, n.agent_id, n.agent_name, n.title, n.content, n.state, n.remark, n.version, n.create_time, n.update_time
+        from news n
+        INNER JOIN agent_settings a on a.agent_id = n.agent_id and a.domain = #{domain}
+        where n.state=3
+        order by n.create_time desc
+    </select>
+
+</mapper>

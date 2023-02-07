@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.SysUserMapper">
+
+    <select id="selectByAgentId" resultType="com.zhongzhi.data.entity.sys.SysUser">
+        select username, nickname, password, salt, phone, gender, head, remark, state, agent_id, role_id,
+               deleted, version, create_time, update_time, email
+        from sys_user
+        where agent_id=#{agentId} and deleted=0 and state=1;
+    </select>
+</mapper>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.customer.CustomerLoginLogMapper">
+
+    <!--通过客户id计数-->
+    <select id="countByCustomerId" resultType="java.lang.Integer">
+        select count(1)
+        from customer_login_log
+        where customer_id=#{customerId}
+    </select>
+
+    <!--客户登录日志-新增-->
+    <insert id="save">
+        insert into customer_login_log
+            (id, request_id, customer_id, username, ip, area, operator, token, `type`, success,
+            code ,exception_message, user_agent, browser_name, browser_version, engine_name, engine_version, os_name,
+            platform_name, mobile, device_name, device_model, remark, create_time, update_time, referer)
+        values
+            (#{id}, #{requestId}, #{customerId}, #{username}, #{ip}, #{area}, #{operator}, #{token}, #{type}, #{success},
+            #{code}, #{exceptionMessage}, #{userAgent}, #{browserName}, #{browserVersion}, #{engineName}, #{engineVersion}, #{osName},
+            #{platformName}, #{mobile}, #{deviceName}, #{deviceModel}, #{remark}, now(), now(), #{referer});
+    </insert>
+
+    <!--客户登录日志-修改-通过客户id-->
+    <update id="updateByCustomerId">
+        update customer_login_log
+        <set>
+            <if test="requestId!=null">
+                request_id=#{requestId},
+            </if>
+            <if test="customerId!=null">
+                customer_id=#{customerId},
+            </if>
+            <if test="username!=null">
+                username=#{username},
+            </if>
+            <if test="ip!=null">
+                ip=#{ip},
+            </if>
+            <if test="area!=null">
+                area=#{area},
+            </if>
+            <if test="operator!=null">
+                operator=#{operator},
+            </if>
+            <if test="token!=null">
+                token=#{token},
+            </if>
+            <if test="type!=null">
+                `type`=#{type},
+            </if>
+            <if test="success!=null">
+                success=#{success},
+            </if>
+            <if test="code!=null">
+                code=#{code},
+            </if>
+            <if test="exceptionMessage!=null">
+                exception_message=#{exceptionMessage},
+            </if>
+            <if test="userAgent!=null">
+                user_agent=#{userAgent},
+            </if>
+            <if test="browserName!=null">
+                browser_name=#{browserName},
+            </if>
+            <if test="browserVersion!=null">
+                browser_version=#{browserVersion},
+            </if>
+            <if test="engineName!=null">
+                engine_name=#{engineName},
+            </if>
+            <if test="engineVersion!=null">
+                engine_version=#{engineVersion},
+            </if>
+            <if test="osName!=null">
+                os_name=#{osName},
+            </if>
+            <if test="platformName!=null">
+                platform_name=#{platformName},
+            </if>
+            <if test="mobile!=null">
+                mobile=#{mobile},
+            </if>
+            <if test="deviceName!=null">
+                device_name=#{deviceName},
+            </if>
+            <if test="deviceModel!=null">
+                device_model=#{deviceModel},
+            </if>
+            <if test="remark!=null">
+                remark=#{remark},
+            </if>
+            <if test="createTime!=null">
+                create_time=#{createTime},
+            </if>
+            <if test="referer!=null">
+                referer=#{referer},
+            </if>
+            update_time=now()
+        </set>
+        where customer_id=#{customerId}
+        order by create_time desc
+        limit 1;
+    </update>
+
+
+    <select id="page" resultType="com.zhongzhi.data.vo.customer.CustomerLoginLogQueryVo">
+        select
+            id, request_id, customer_id, username, ip, area, operator, token, `type`, success,
+            code ,exception_message, user_agent, ,browser_name, browser_version, engine_name, engine_version, os_name,
+            platform_name, mobile, device_name, device_model, remark, create_time, update_time, referer
+        from customer_login_log
+        <where>
+            <if test="param.fromTime != null">
+                and create_time >= #{param.fromTime}
+            </if>
+            <if test="param.endTime != null">
+                and create_time <![CDATA[ < ]]> #{param.endTime}
+            </if>
+            <if test="param.customerId != null">
+                and customer_id = #{param.customerId}
+            </if>
+        </where>
+    </select>
+</mapper>

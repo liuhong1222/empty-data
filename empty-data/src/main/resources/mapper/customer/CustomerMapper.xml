@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.customer.CustomerMapper">
+    <sql id="common_fields">
+       id, `name`, agent_id, phone, password, salt, email, unzip_password, customer_type,
+       remark, state, version, create_time, update_time, ip, area, operator, referer, authentication_limit_level
+    </sql>
+
+    <!--客户-新增-->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into customer
+            (id, `name`, agent_id, phone, password, salt, email, unzip_password, customer_type,
+            remark, state, version, create_time, update_time, ip, area, operator, referer, authentication_limit_level)
+        values
+            (#{id}, #{name}, #{agentId}, #{phone}, #{password}, #{salt}, #{email}, #{unzipPassword}, #{customerType},
+            #{remark}, #{state}, #{version}, now(), now(), #{ip}, #{area}, #{operator}, #{referer}, #{authenticationLimitLevel})
+    </insert>
+
+    <!--客户-查询（通过id）-->
+    <select id="findById" resultType="com.zhongzhi.data.entity.customer.Customer">
+        select <include refid="common_fields"/>
+        from customer
+        where id = #{id};
+    </select>
+
+    <!--统计ip地址数量-->
+    <select id="count" resultType="java.lang.Integer">
+        select count(1)
+        from customer
+        where ip=#{ip};
+    </select>
+
+    <!--根据ID获取查询对象-->
+    <select id="getCustomerById" resultType="com.zhongzhi.data.vo.customer.CustomerQueryVo">
+        select <include refid="common_fields"/>
+        from customer
+        where id = #{id}
+    </select>
+
+    <!--客户-查询（通过phone）-->
+    <select id="findByPhone" resultType="com.zhongzhi.data.entity.customer.Customer">
+        select <include refid="common_fields"/>
+        from customer
+        where phone=#{phone} and agent_id=#{agentId};
+    </select>
+
+    <!--客户-修改-->
+    <update id="update">
+        update customer
+        <set>
+            <if test="name!=null and name!=''">
+                `name`=#{name},
+            </if>
+            <if test="agentId!=null and agentId!=''">
+                agent_id=#{agentId},
+            </if>
+            <if test="phone!=null and phone!=''">
+                phone=#{phone},
+            </if>
+            <if test="password!=null and password!=''">
+                password=#{password},
+            </if>
+            <if test="salt!=null and salt!=''">
+                salt=#{salt},
+            </if>
+            <if test="email!=null and email!=''">
+                email=#{email},
+            </if>
+            <if test="unzipPassword!=null and unzipPassword!=''">
+                unzip_password=#{unzipPassword},
+            </if>
+            <if test="customerType!=null">
+                customer_type=#{customerType},
+            </if>
+            <if test="remark!=null and remark!=''">
+                remark=#{remark},
+            </if>
+            <if test="state!=null and state!=''">
+                state=#{state},
+            </if>
+            <if test="version!=null and version!=''">
+                version=#{version},
+            </if>
+            <if test="ip!=null and ip!=''">
+                ip=#{ip},
+            </if>
+            <if test="area!=null and area!=''">
+                area=#{area},
+            </if>
+            <if test="operator!=null and operator!=''">
+                operator=#{operator},
+            </if>
+            <if test="referer!=null and referer!=''">
+                referer=#{referer},
+            </if>
+            update_time=now()
+        </set>
+        where id=#{id};
+    </update>
+
+    <!--获取通过代理商id和时间条件过滤后的客户数量-->
+    <select id="countByAgentIdAndCreateTime" resultType="java.lang.Integer">
+        select count(1)
+        from customer
+        where agent_id=#{agentId} and create_time &gt;= #{date}
+    </select>
+
+    <!--通过用户名、手机号、邮箱查找客户-->
+    <select id="selectByNameOrPhoneOrEmail" resultType="com.zhongzhi.data.entity.customer.Customer">
+        select <include refid="common_fields"/>
+        from customer
+        where  (phone=#{account} and agent_id=#{agentId})
+            or (`name`=#{account} and agent_id=#{agentId})
+            or (email=#{account} and agent_id=#{agentId})
+        limit 1
+    </select>
+
+    <!--客户-查询（通过邮箱）-->
+    <select id="findByEmail" resultType="com.zhongzhi.data.entity.customer.Customer">
+        select <include refid="common_fields"/>
+        from customer
+        where email=#{email} and agent_id=#{agentId}
+    </select>
+
+    <!--客户-修改-字段置null-->
+    <update id="setNull">
+        update customer
+        <set>
+            <if test="unzipPassword==null and unzipPassword!=''">
+                unzip_password=#{unzipPassword},
+            </if>
+            update_time=now()
+        </set>
+        where id=#{id};
+    </update>
+</mapper>

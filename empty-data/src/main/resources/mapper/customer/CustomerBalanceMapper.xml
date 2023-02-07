@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.customer.CustomerBalanceMapper">
+
+    <!--客户余额记录-新增-->
+    <insert id="save">
+        insert into customer_balance
+            (customer_id, empty_count, realtime_count, international_count,direct_common_count,line_direct_count,version, create_time, update_time,
+            empty_recharge_num, empty_recharge_money, realtime_recharge_num, realtime_recharge_money,international_recharge_num,international_recharge_money,
+            direct_common_recharge_num,direct_common_recharge_money,line_direct_recharge_num,line_direct_recharge_money)
+        values
+            (#{customerId}, #{emptyCount}, #{realtimeCount}, #{internationalCount}, #{directCommonCount}, #{lineDirectCount},#{version}, now(), now(),
+             #{emptyRechargeNum}, #{emptyRechargeMoney}, #{realtimeRechargeNum}, #{realtimeRechargeMoney}, #{internationalRechargeNum}, #{internationalRechargeMoney}
+             , #{directCommonRechargeNum}, #{directCommonRechargeMoney}, #{lineDirectRechargeNum}, #{lineDirectRechargeMoney})
+    </insert>
+
+    <!--客户余额记录-修改-->
+    <update id="update">
+        update customer_balance
+        <set>
+            <if test="emptyCount!=null">
+                empty_count=empty_count+#{emptyCount},
+            </if>
+            <if test="realtimeCount!=null">
+                realtime_count=realtime_count+#{realtimeCount},
+            </if>
+            <if test="internationalCount!=null">
+                international_count=international_count+#{internationalCount},
+            </if>
+            
+            <if test="directCommonCount!=null">
+                direct_common_count=direct_common_count+#{directCommonCount},
+            </if>
+            <if test="lineDirectCount!=null">
+                line_direct_count=line_direct_count+#{lineDirectCount},
+            </if>
+            
+            <if test="version!=null">
+                version=#{version},
+            </if>
+            <if test="emptyRechargeNum!=null">
+                empty_recharge_num=empty_recharge_num+#{emptyRechargeNum},
+            </if>
+            <if test="emptyRechargeMoney!=null">
+                empty_recharge_money=empty_recharge_money+#{emptyRechargeMoney},
+            </if>
+            <if test="realtimeRechargeNum!=null">
+                realtime_recharge_num=realtime_recharge_num+#{realtimeRechargeNum},
+            </if>
+            <if test="realtimeRechargeMoney!=null">
+                realtime_recharge_money=realtime_recharge_money+#{realtimeRechargeMoney},
+            </if>
+            
+            <if test="internationalRechargeNum!=null">
+                international_recharge_num=international_recharge_num+#{internationalRechargeNum},
+            </if>
+            <if test="internationalRechargeMoney!=null">
+                international_recharge_money=international_recharge_money+#{internationalRechargeMoney},
+            </if>
+            
+            <if test="directCommonRechargeNum!=null">
+                direct_common_recharge_num=direct_common_recharge_num+#{directCommonRechargeNum},
+            </if>
+            <if test="directCommonRechargeMoney!=null">
+                direct_common_recharge_money=direct_common_recharge_money+#{directCommonRechargeMoney},
+            </if>
+            
+            <if test="lineDirectRechargeNum!=null">
+                line_direct_recharge_num=line_direct_recharge_num+#{lineDirectRechargeNum},
+            </if>
+            <if test="lineDirectRechargeMoney!=null">
+                line_direct_recharge_money=line_direct_recharge_money+#{lineDirectRechargeMoney},
+            </if>
+            update_time=now()
+        </set>
+        where customer_id=#{customerId}
+
+    </update>
+
+    <!--客户余额记录-查找（通过客户id）-->
+    <select id="findByCustomerId" resultType="com.zhongzhi.data.entity.customer.CustomerBalance">
+        select
+            id, customer_id, ifnull(empty_count,0) empty_count, ifnull(realtime_count,0) realtime_count,ifnull(international_count,0) international_count, 
+            ifnull(direct_common_count,0) direct_common_count, ifnull(line_direct_count,0) line_direct_count, version, create_time, update_time,
+            empty_recharge_num, empty_recharge_money, realtime_recharge_num, realtime_recharge_money,international_recharge_num,international_recharge_money,
+            direct_common_recharge_num,direct_common_recharge_money,line_direct_recharge_num,line_direct_recharge_money
+        from customer_balance
+        where customer_id=#{customerId}
+        limit 0,1
+    </select>
+
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.agent.AgentAccountMapper">
+
+    <!--代理商账户-修改-->
+    <update id="update">
+        update agent_account
+        <set>
+            <if test="emptyRechargeMoney!=null">
+                empty_recharge_money=#{emptyRechargeMoney},
+            </if>
+            <if test="realtimeRechargeMoney!=null">
+                realtime_recharge_money=#{realtimeRechargeMoney},
+            </if>
+            <if test="internationalRechargeMoney!=null">
+                international_recharge_money=#{internationalRechargeMoney},
+            </if>
+            <if test="directCommonRechargeMoney!=null">
+                direct_common_recharge_money=#{directCommonRechargeMoney},
+            </if>
+            <if test="lineDirectRechargeMoney!=null">
+                line_direct_recharge_money=#{lineDirectRechargeMoney},
+            </if>
+            <if test="emptyRechargeMoney!=null">
+                empty_recharge_money=#{emptyRechargeMoney},
+            </if>
+            <if test="realtimeRechargeNumber!=null">
+                realtime_recharge_number=#{realtimeRechargeNumber},
+            </if>
+            <if test="internationalRechargeNumber!=null">
+                international_recharge_number=#{internationalRechargeNumber},
+            </if>
+            <if test="directCommonRechargeNumber!=null">
+                direct_common_recharge_number=#{directCommonRechargeNumber},
+            </if>
+            <if test="lineDirectRechargeNumber!=null">
+                line_direct_recharge_number=#{lineDirectRechargeNumber},
+            </if>
+            <if test="emptyBalance!=null">
+                empty_balance=#{emptyBalance},
+            </if>
+            <if test="realtimeBalance!=null">
+                realtime_balance=#{realtimeBalance},
+            </if>
+            <if test="internationalBalance!=null">
+                international_balance=#{internationalBalance},
+            </if>
+            <if test="directCommonBalance!=null">
+                direct_common_balance=#{directCommonBalance},
+            </if>
+            <if test="lineDirectBalance!=null">
+                line_direct_balance=#{lineDirectBalance},
+            </if>
+            <if test="custRechargeMoney!=null">
+                cust_recharge_money=#{custRechargeMoney},
+            </if>
+            <if test="custRechargeNum!=null">
+                cust_recharge_num=#{custRechargeNum},
+            </if>
+            <if test="custRealtimeRechargeMoney!=null">
+                cust_realtime_recharge_money=#{custRealtimeRechargeMoney},
+            </if>
+            <if test="custRealtimeRechargeNum!=null">
+                cust_realtime_recharge_num=#{custRealtimeRechargeNum},
+            </if>
+            <if test="custInternationalRechargeMoney!=null">
+                cust_international_recharge_money=#{custInternationalRechargeMoney},
+            </if>
+            <if test="custInternationalRechargeNum!=null">
+                cust_international_recharge_num=#{custInternationalRechargeNum},
+            </if>
+            <if test="custDirectCommonRechargeMoney!=null">
+                cust_direct_common_recharge_money=#{custDirectCommonRechargeMoney},
+            </if>
+            <if test="custDirectCommonRechargeNum!=null">
+                cust_direct_common_recharge_num=#{custDirectCommonRechargeNum},
+            </if>
+            <if test="custLineDirectRechargeMoney!=null">
+                cust_line_direct_recharge_money=#{custLineDirectRechargeMoney},
+            </if>
+            <if test="custLineDirectRechargeNum!=null">
+                cust_line_direct_recharge_num=#{custLineDirectRechargeNum},
+            </if>
+            
+            update_time=now()
+        </set>
+        where agent_id=#{agentId}
+    </update>
+
+    <!--代理商账户-查找（通过代理商id）-->
+    <select id="findByAgentId" resultType="com.zhongzhi.data.entity.agent.AgentAccount">
+        select agent_id, empty_recharge_money, realtime_recharge_money,international_recharge_money,direct_common_recharge_money,line_direct_recharge_money,
+               create_time, update_time, empty_recharge_number, realtime_recharge_number, international_recharge_number,direct_common_recharge_number,line_direct_recharge_number,
+               empty_balance, realtime_balance,international_balance,direct_common_balance,line_direct_balance,
+               cust_recharge_money, cust_recharge_num, cust_realtime_recharge_money, cust_realtime_recharge_num,
+               cust_international_recharge_money,cust_international_recharge_num,
+               cust_direct_common_recharge_money,cust_direct_common_recharge_num,
+               cust_line_direct_recharge_money,cust_line_direct_recharge_num
+        from agent_account
+        where agent_id=#{agentId}
+        limit 0,1
+    </select>
+
+</mapper>

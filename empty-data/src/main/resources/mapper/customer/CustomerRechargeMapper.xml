@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.customer.CustomerRechargeMapper">
+
+    <!--通过id和充值类型来计数-->
+    <select id="countByCustomerIdAndPayType" resultType="java.lang.Integer">
+        select count(1)
+        from customer_recharge
+        where customer_id=#{id} and pay_type=2
+    </select>
+
+    <!--客户充值记录-新增-->
+    <insert id="save">
+        insert into customer_recharge
+            (id, agent_id, customer_id, goods_name, `name`, phone, order_no, price, recharge_number,
+            payment_amount, pay_type, remark, version, create_time, update_time, creator_name, category,
+            opening_balance, closing_balance)
+        values(#{id}, #{agentId}, #{customerId}, #{goodsName}, #{name}, #{phone}, #{orderNo}, #{price}, #{rechargeNumber},
+            #{paymentAmount}, #{payType}, #{remark}, #{version}, now(), now(), #{creatorName}, #{category},
+            #{openingBalance}, #{closingBalance});
+    </insert>
+
+    <select id="countGiftTotalNumber" resultType="com.zhongzhi.data.entity.customer.CustomerGiftTotalInfo">
+        select sum(recharge_number) totalNumber, customer_id
+        from customer_recharge
+        where customer_id in
+        <foreach collection="customerIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and pay_type = 2
+        and category = #{category}
+        group by customer_id
+    </select>
+
+    <select id="countCustomerRechargeInfo" resultType="com.zhongzhi.data.entity.customer.CustomerRechargeTotalInfo">
+        select customer_id, sum(recharge_number) rechargeNumberTotal, sum(convert(payment_amount, decimal(10,2)))
+        paymentAmountTotal
+        from customer_recharge
+        where pay_type != 2
+        and customer_id in
+        <foreach collection="customerIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and category = #{category}
+        group by customer_id
+    </select>
+
+    <!--客户充值记录-查找（通过客户id和payType不等于）-->
+    <select id="findByCustomerIdAndPayTypeNe" resultType="com.zhongzhi.data.entity.customer.CustomerRecharge">
+        select agent_id, customer_id, goods_name, `name`, phone, order_no, price, recharge_number,
+               payment_amount, pay_type, remark, version, create_time, update_time, creator_name, category,
+               opening_balance, closing_balance
+        from customer_recharge
+        where customer_id=#{customerId} and pay_type!=#{payType}
+        limit 1
+    </select>
+
+    <select id="getCustomerRechargePageListForFront" resultType="com.zhongzhi.data.vo.customer.CustomerRechargeQueryVo">
+        select id,
+        goods_name,
+        order_no,
+        price,
+        recharge_number,
+        payment_amount,
+        pay_type,
+        remark,
+        version,
+        category,
+        create_time,
+        update_time
+        from customer_recharge
+        where
+        customer_id = #{param.customerId}
+        <if test="param.category != null">
+            and category = #{param.category}
+        </if>
+        <if test="param.createTimeFrom != null">
+            and create_time >= #{param.createTimeFrom}
+        </if>
+        <if test="param.createTimeEnd != null">
+            and create_time &lt;= #{param.createTimeEnd}
+        </if>
+        order by create_time desc
+    </select>
+
+    <!--统计代理商为客户充值汇总信息-->
+    <select id="countCustomerRechargeInfoByAgentIds" resultType="com.zhongzhi.data.vo.customer.CustomerRechargeQueryVo">
+        select agent_id, sum(recharge_number) recharge_number, sum(convert(payment_amount, decimal(10,2)))
+        payment_amount
+        from customer_recharge
+        where pay_type != 2
+        and agent_id in
+        <foreach collection="agentIds" open="(" item="agentId" separator="," close=")">
+            #{agentId}
+        </foreach>
+        and category = #{category}
+        group by agent_id
+    </select>
+
+    <!--客户充值记录-查找（通过外部订单号）-->
+    <select id="selectByOrderNo" resultType="com.zhongzhi.data.entity.customer.CustomerRecharge">
+        select
+            id, agent_id, customer_id, goods_name, name, phone, order_no, price, recharge_number, payment_amount, pay_type,
+            category, remark, version, create_time, update_time, creator_name, opening_balance, closing_balance
+        from customer_recharge where
+        order_no = #{outTradeNo} limit 1
+    </select>
+
+</mapper>

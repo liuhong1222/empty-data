@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.agent.AgentRechargeMapper">
+
+    <!--通过代理商Id查询代理商充值汇总信息-->
+    <select id="selectAgentRechargeInfo" resultType="com.zhongzhi.data.entity.agent.AgentRechargeTotalInfo">
+        select agent_id, sum(recharge_number) as rechargeNumberTotal, sum(payment_amount) as paymentAmountTotal
+        from agent_recharge
+        where agent_id in
+        <foreach collection="agentIds" item="agentId" open="(" separator="," close=")">
+            #{agentId}
+        </foreach>
+        and category = #{category}
+        group by agent_id
+    </select>
+
+    <!--统计启用代理商的充值条数-->
+    <select id="countEnableAgentRechargeAmount" resultType="java.lang.Long">
+        select sum(recharge_number)
+        from agent_recharge r
+        inner join agent a on r.agent_id = a.id
+        where a.state = 1
+        <if test="category != null">
+            and r.category = #{category}
+        </if>
+    </select>
+
+    <!--统计启用代理商的充值金额-->
+    <select id="countEnableAgentRechargeMoney" resultType="java.lang.Long">
+        select sum(payment_amount)
+        from agent_recharge r
+        inner join agent a on r.agent_id = a.id
+        where a.state = 1
+        <if test="category != null">
+            and r.category = #{category}
+        </if>
+    </select>
+
+    <!--统计代理商充值总数-->
+    <select id="countTotalNumForUpdate" resultType="java.lang.Long">
+        select sum(recharge_number)
+        from agent_recharge
+        where agent_id = #{agentId}
+        for update
+    </select>
+</mapper>

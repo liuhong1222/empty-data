@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.customer.CustomerConsumeMapper">
+
+    <select id="countConsumeInfo" resultType="com.zhongzhi.data.entity.customer.CustomerConsumeTotalInfo">
+        select customer_id, sum(consume_number) consumeNumberTotal from customer_consume
+        where customer_id in
+        <foreach collection="customerIds" item="customerId" open="(" separator="," close=")">
+            #{customerId}
+        </foreach>
+        and consume_type in
+        <foreach collection="types" item="type" open="(" separator="," close=")">
+            #{type}
+        </foreach>
+        and category = #{category}
+        group by customer_id
+    </select>
+
+    <insert id="saveOne" parameterType="com.zhongzhi.data.entity.customer.CustomerConsume">
+    	insert into customer_consume(id, agent_id, customer_id, name, phone, consume_number,
+   		                              consume_type, empty_id, remark, version, create_time, update_time,
+   		                               category, opening_balance, closing_balance)
+   		values
+		(#{id},#{agentId},#{customerId},#{name},#{phone},#{consumeNumber},#{consumeType},
+				#{emptyId},#{remark},#{version},now(),now(),#{category},#{openingBalance},#{closingBalance})
+    </insert>
+</mapper>

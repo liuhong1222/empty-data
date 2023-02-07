@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.realtime.RealtimeDailyInfoMapper">
+
+    <select id="findList" resultType="com.zhongzhi.data.entity.realtime.RealtimeDailyInfo" parameterType="com.zhongzhi.data.param.DailyInfoParam">
+		select id, day_int, agent_id, customer_id, realtime_total, normal_number, realtime_empty_number, oncall_number, 
+		       not_online_number, shutdown_number, like_shutdown_number, tingji_number, mnp_number, moberr_number, 
+		       unknown_number, staticType, create_time, update_time
+		from oem_cust_daily_realtime_info
+		<where>
+			<if test="staticType != null and staticType != ''">
+				staticType = #{staticType}
+			</if>
+			<if test="startDay != null and startDay != ''">
+				and day_int >= #{startDay}
+			</if>
+			<if test="endDay != null and endDay != ''">
+				and day_int &lt;= #{endDay}
+			</if>
+			<if test="customerId != null and customerId != ''">
+				and customer_id = #{customerId}
+			</if>
+		</where>
+		order by id desc
+	</select>
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper    
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.customer.CustomerOrderRecordMapper">
+
+    <!--获取扫码付订单状态-->
+    <select id="findByOutOrderId" resultType="com.zhongzhi.data.entity.customer.CustomerOrderRecord">
+        select id, agent_id, customer_id, goods_name, goods_specifications, goods_price,pay_type,
+               out_order_id, buyer_logon_id, buyer_user_id, trade_no, trade_status, remark,
+               version, create_time, update_time, category
+        from customer_order_record
+        where out_order_id=#{orderNo};
+    </select>
+
+    <!--客户支付宝支付交易记录-新增-->
+    <insert id="save">
+        insert into customer_order_record
+            (id, agent_id, customer_id, goods_name, goods_specifications, goods_price,pay_type,
+               out_order_id, buyer_logon_id, buyer_user_id, trade_no, trade_status, remark,
+               version, create_time, update_time, category)
+        values
+            (#{id}, #{agentId}, #{customerId}, #{goodsName}, #{goodsSpecifications}, #{goodsPrice},#{payType},
+             #{outOrderId}, #{buyerLogonId}, #{buyerUserId}, #{tradeNo}, #{tradeStatus}, #{remark},
+             #{version}, now(), now(), #{category});
+    </insert>
+
+    <!--客户支付宝支付交易记录-修改-->
+    <update id="update">
+        update customer_order_record
+        <set>
+            <if test="agentId!=null">
+                agent_id=#{agentId},
+            </if>
+            <if test="customerId!=null">
+                customer_id=#{customerId},
+            </if>
+            <if test="goodsName!=null">
+                goods_name=#{goodsName},
+            </if>
+            <if test="goodsSpecifications!=null">
+                goods_specifications=#{goodsSpecifications},
+            </if>
+            <if test="goodsPrice!=null">
+                goods_price=#{goodsPrice},
+            </if>
+            <if test="outOrderId!=null">
+                out_order_id=#{outOrderId},
+            </if>
+            <if test="buyerLogonId!=null">
+                buyer_logon_id=#{buyerLogonId},
+            </if>
+            <if test="buyerUserId!=null">
+                buyer_user_id=#{buyerUserId},
+            </if>
+            <if test="tradeNo!=null">
+                trade_no=#{tradeNo},
+            </if>
+            <if test="tradeStatus!=null">
+                trade_status=#{tradeStatus},
+            </if>
+            <if test="remark!=null">
+                remark=#{remark},
+            </if>
+            <if test="version!=null">
+                version=#{version},
+            </if>
+            <if test="category!=null">
+                category=#{category},
+            </if>
+            update_time=now()
+        </set>
+        where id=#{id}
+    </update>
+
+    <!--客户支付宝支付交易记录-查找（通过支付宝交易号和创建时间）-->
+    <select id="findByTradeStatusAndCreateTime" resultType="com.zhongzhi.data.entity.customer.CustomerOrderRecord">
+        select id, agent_id, customer_id, goods_name, goods_specifications, goods_price,pay_type,
+               out_order_id, buyer_logon_id, buyer_user_id, trade_no, trade_status, remark,
+               version, create_time, update_time, category
+        from customer_order_record
+        <where>
+            <if test="status!=null">
+                and trade_status=#{status}
+            </if>
+            and create_time &lt;= #{date}
+        </where>
+    </select>
+
+</mapper>

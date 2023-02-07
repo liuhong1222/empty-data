@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongzhi.data.mapper.direct.IntDirectCvsFilePathMapper">
+
+    <insert id="saveOne" parameterType="com.zhongzhi.data.entity.direct.IntDirectCvsFilePath">
+        insert into int_direct_cvs_file_path(id, customer_id, create_date, int_direct_id, country_code,product_type,active_file_path, active_file_size,
+                                                active_number, no_register_file_path, no_register_file_size, no_register_number, 
+                                                zip_name, zip_path, zip_size, total_number, create_time,deleted,update_time)
+        values
+            (#{id},#{customerId},#{createDate},#{intDirectId},#{countryCode},#{productType},#{activeFilePath},#{activeFileSize},#{activeNumber},#{noRegisterFilePath},
+             #{noRegisterFileSize},#{noRegisterNumber},#{zipName},#{zipPath},#{zipSize},#{totalNumber},now(),0,now())
+    </insert>
+
+    <select id="findOne" resultType="com.zhongzhi.data.entity.direct.IntDirectCvsFilePath">
+        select id, customer_id, create_date, int_direct_id, country_code,product_type,active_file_path, active_file_size,
+                active_number, no_register_file_path, no_register_file_size, no_register_number, 
+                zip_name, zip_path, zip_size, total_number, create_time,deleted,update_time
+        from int_direct_cvs_file_path
+        where customer_id = #{customerId} and int_direct_id = #{intDirectId}
+        limit 0,1
+    </select>
+
+    <!--删除-->
+    <update id="delete">
+        update int_direct_cvs_file_path
+        set deleted = 1,update_time = now()
+        where id=#{id}
+    </update>
+    
+    <select id="pageList" resultType="com.zhongzhi.data.vo.IntDirectCheckQueryVo" parameterType="com.zhongzhi.data.param.IntDirectCheckQueryParam">
+    	select a.*
+    	from (
+    		SELECT id,customer_id,country_code,product_type,active_number,no_register_number,total_number,deleted,
+	     	   create_time,update_time,active_file_path,no_register_file_path,zip_name,zip_path,zip_size,1 checkStatus
+			from int_direct_cvs_file_path 
+			where customer_id = #{customerId} and deleted = 0
+			<if test="productType != null">
+				and product_type = #{productType}
+			</if>
+			<if test="createTimeFrom != null">
+				and create_date >= #{createTimeFrom}
+			</if>
+			<if test="createTimeEnd != null">
+				 <![CDATA[ and create_date <= #{createTimeEnd} ]]>
+			</if>
+			union all 
+			select null id,customer_id,country_code,product_type, null active_number,null no_register_number,total_number,deleted,
+		     	   create_time,update_time,null active_file_path,null no_register_file_path,file_name zip_name,null zip_path,file_size zip_size,0 checkStatus
+			from int_direct_check
+			where customer_id = #{customerId} and deleted = 0 and status = 0
+			<if test="productType != null">
+				and product_type = #{productType}
+			</if>
+			<if test="createTimeFrom != null">
+				and create_time >= #{createTimeFrom}
+			</if>
+			<if test="createTimeEnd != null">
+				 <![CDATA[ and create_time < DATE_ADD(#{createTimeEnd} ,INTERVAL 1 day)]]>
+			</if>
+    	) a
+		order by a.create_time desc
+    </select>
+    
+    <select id="findLastOne" resultType="com.zhongzhi.data.vo.IntDirectCheckQueryVo">
+    	SELECT id,customer_id,country_code,product_type,active_number,no_register_number,total_number,deleted,
+	     	   create_time,update_time,active_file_path,no_register_file_path,zip_name,zip_path,zip_size
+		from int_direct_cvs_file_path 
+		where customer_id = #{customerId} and deleted = 0
+		order by id desc 
+		limit 0,1
+    </select>
+    
+	<select id="statisticList" resultType="com.zhongzhi.data.entity.direct.IntDirectCheckStatistics">
+		select sum(active_number)                     		active_number,
+			   sum(no_register_number)                   	no_register_number,
+			   sum(total_number)                    totalNumber,
+			   create_date `day`
+		from int_direct_cvs_file_path
+		where deleted = 0
+			and customer_id = #{customerId}
+			and create_date >= #{fromTime}
+			<![CDATA[ and create_date <  #{endTime} ]]>
+		group by create_date
+		order by create_date
+	</select>
+</mapper>
