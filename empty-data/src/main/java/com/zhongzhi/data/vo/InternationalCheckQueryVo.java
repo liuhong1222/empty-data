@@ -64,4 +64,9 @@ public class InternationalCheckQueryVo implements Serializable {
     @ApiModelProperty(value = "压缩包大小")
     private String zipSize;
 
+    @ApiModelProperty(value = "检测状态")
+    private Integer checkStatus;
+    
+    @ApiModelProperty(value = "检测进度")
+    private String checkProcess;
 }

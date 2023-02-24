@@ -36,6 +36,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.exceptions.JedisException;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -320,6 +321,14 @@ public class InternationalService {
 		
 		PageHelper.startPage(param.getPage(), param.getSize());
 		List<InternationalCheckQueryVo> list = internationalCvsFilePathService.pageList(param);
+		
+		list.forEach(i -> {
+			if(i.getCheckStatus() == 0) {
+				int sec = (int) ((new Date().getTime() - i.getCreateTime().getTime()) / 1000);
+				int process = (sec * 6) >= i.getTotalNumber().intValue() ? 99 : (int)((sec * 6 * 100) / i.getTotalNumber());
+				i.setCheckProcess(String.valueOf(process));
+			}
+		});
 
 		return new PageInfo<InternationalCheckQueryVo>(list);
 	}
