@@ -20,8 +20,10 @@ import com.zhongzhi.data.enums.ApiCode;
 import com.zhongzhi.data.enums.StateEnum;
 import com.zhongzhi.data.exception.BusinessException;
 import com.zhongzhi.data.param.FrontLoginParam;
+import com.zhongzhi.data.param.SmsCodeParam;
 import com.zhongzhi.data.redis.RedisClient;
 import com.zhongzhi.data.service.ApiSettingsService;
+import com.zhongzhi.data.service.ImageYzmService;
 import com.zhongzhi.data.service.IpAddressService;
 import com.zhongzhi.data.service.MailService;
 import com.zhongzhi.data.service.agent.AgentService;
@@ -88,6 +90,9 @@ public class LoginService {
 
     @Autowired
     private ApiSettingsService apiSettingsService;
+    
+    @Autowired
+    private ImageYzmService imageYzmService;
 
     @Resource
     private LogUtil logUtil;
@@ -402,9 +407,16 @@ public class LoginService {
      * @param phone
      * @return com.zhongzhi.data.common.api.ApiResult<java.lang.String>
      */
-    public ApiResult<String> sendSmsCode(String phone, HttpServletResponse response) {
+    public ApiResult<String> sendSmsCode(SmsCodeParam smsCodeParam, HttpServletResponse response) {
+    	// 0.图文验证码校验
+    	ApiResult iyzmResult = imageYzmService.invokeImageYzm(smsCodeParam.getIp(), smsCodeParam.getRandStr(), smsCodeParam.getTicket());
+    	if (!iyzmResult.isOk()) {
+    		logger.error("{},登录验证码发送失败，图文验证失败，",smsCodeParam.getPhone());
+            return iyzmResult;
+        }
+    	
         // 1.校验一分钟内该手机号没有发送过短信
-        ApiResult smsResult = checkSendAgain(phone);
+        ApiResult smsResult = checkSendAgain(smsCodeParam.getPhone());
         if (!smsResult.isOk()) {
             return smsResult;
         }
@@ -420,20 +432,20 @@ public class LoginService {
         // --- 获取代理商签名
         AgentSettings agentSettings = agentSettingsService.findByDomainAudited(domain);
         if (agentSettings==null || StringUtils.isBlank(agentSettings.getSmsSignature())) {
-            logger.info("代理商状态异常或短信签名不正确, 域名: {}", domain);
+            logger.error("代理商状态异常或短信签名不正确, 域名: {}", domain);
             return ApiResult.fail("代理商状态异常或短信签名不正确，请联系客服进行处理，谢谢！");
         }
         String content = String.format("【%s】您的验证码是：%s", agentSettings.getSmsSignature(), validSmsCode);
 
         // 2.2 调用接口，发送短信
-        logger.info("短信接口调用成功，手机号：{}，内容：{}，verifyToken:{}。", phone, content, verifyToken);
-        ApiResult apiResult = SmsUtil.sendMsg(phone, content);
+        logger.info("短信接口调用成功，手机号：{}，内容：{}，verifyToken:{}。", smsCodeParam.getPhone(), content, verifyToken);
+        ApiResult apiResult = SmsUtil.sendMsg(smsCodeParam.getPhone(), content);
         if (!apiResult.isOk()) {
             return apiResult;
         }
         // --- 设置验证码缓存和发送过验证码缓存，
         redisClient.set(RedisConstant.LOGIN_SMS_CODE_PREFIX+verifyToken, validSmsCode, Constant.TWO_MINUTES);
-        redisClient.set(RedisConstant.LOGIN_SMS_CODE_FLAG_PREFIX+agentSettings.getAgentId()+"-"+phone, "used", Constant.ONE_MINUTES);
+        redisClient.set(RedisConstant.LOGIN_SMS_CODE_FLAG_PREFIX+agentSettings.getAgentId()+"-"+smsCodeParam.getPhone(), "used", Constant.ONE_MINUTES);
 
         // 4.返回响应数据
         response.setHeader(VERIFY_SMS_TOKEN, verifyToken);
