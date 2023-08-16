@@ -36,10 +36,11 @@ public class SmsCodeParam {
     @ApiModelProperty("手机号码")
     private String phone;
    
-    @ApiModelProperty("图形验证码Token")
-    private String verifyToken;
+    @ApiModelProperty("图形验证码randStr")
+    private String randStr;
 
-    @ApiModelProperty("图形验证码")
-    private String code;
+    @ApiModelProperty("图形验证码ticket")
+    private String ticket;
 
+    private String ip;
 }

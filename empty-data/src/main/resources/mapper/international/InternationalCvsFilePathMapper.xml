@@ -32,17 +32,32 @@
     </update>
     
     <select id="pageList" resultType="com.zhongzhi.data.vo.InternationalCheckQueryVo" parameterType="com.zhongzhi.data.param.InternationalCheckQueryParam">
-    	SELECT id,customer_id,active_number,no_register_number,unknown_number,total_number,deleted,
-	     	   create_time,update_time,active_file_path,no_register_file_path,unknown_file_path,zip_name,zip_path,zip_size
-		from international_cvs_file_path 
-		where customer_id = #{customerId} and deleted = 0
-		<if test="createTimeFrom != null">
-			and create_date >= #{createTimeFrom}
-		</if>
-		<if test="createTimeEnd != null">
-			 <![CDATA[ and create_date <= #{createTimeEnd} ]]>
-		</if>
-		order by id desc
+	    select a.* 
+	    from (
+	    	SELECT id,customer_id,active_number,no_register_number,unknown_number,total_number,deleted,
+		     	   create_time,update_time,active_file_path,no_register_file_path,unknown_file_path,zip_name,zip_path,zip_size,1 checkStatus
+			from international_cvs_file_path 
+			where customer_id = #{customerId} and deleted = 0
+			<if test="createTimeFrom != null">
+				and create_date >= #{createTimeFrom}
+			</if>
+			<if test="createTimeEnd != null">
+				 <![CDATA[ and create_date <= #{createTimeEnd} ]]>
+			</if>
+			union all 
+			SELECT null id,customer_id,null active_number,null no_register_number,null unknown_number,total_number,deleted,
+		     	   create_time,update_time,null active_file_path,null no_register_file_path,null unknown_file_path,
+		     	   file_name zip_name,null zip_path,file_size zip_size,0 checkStatus
+			from international_check
+			where customer_id = #{customerId} and status = 0 and deleted = 0 
+			<if test="createTimeFrom != null">
+				and create_time >= #{createTimeFrom}
+			</if>
+			<if test="createTimeEnd != null">
+				 <![CDATA[ and create_time < DATE_ADD(#{createTimeEnd} ,INTERVAL 1 day)]]>
+			</if>
+		) a
+		order by a.create_time desc
     </select>
     
     <select id="findLastOne" resultType="com.zhongzhi.data.vo.InternationalCheckQueryVo">

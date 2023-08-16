@@ -25,6 +25,7 @@ import com.zhongzhi.data.service.ProductService;
 import com.zhongzhi.data.service.agent.AgentService;
 import com.zhongzhi.data.service.agent.AgentSettingsService;
 import com.zhongzhi.data.service.front.LoginService;
+import com.zhongzhi.data.util.IpUtil;
 import com.zhongzhi.data.util.PhoneMatchUtil;
 import com.zhongzhi.data.util.PhoneUtil;
 import com.zhongzhi.data.util.RequestUtil;
@@ -140,7 +141,8 @@ public class LoginController {
             return ApiResult.fail(ApiCode.LOGIN_EXCEPTION, "手机号码格式不正确");
         }
 
-        return loginService.sendSmsCode(smsCodeParam.getPhone(),response);
+        smsCodeParam.setIp(IpUtil.getRequestIp(request));
+        return loginService.sendSmsCode(smsCodeParam,response);
     }
     
     /**
